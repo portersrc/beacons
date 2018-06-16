@@ -11,7 +11,10 @@ int n; // n, as in, an n x n matrix
 
 void usage_and_exit(char *program_name)
 {
-    printf("\nUsage: %s mem_usage_kb runtime_s\n\n", program_name);
+    printf("\nUsage:\n");
+    printf("\t%s mem_usage_kb 0 runtime_s\n", program_name);
+    printf("  or\n");
+    printf("\t%s mem_usage_kb 1 num_matrix_multiply_loops\n\n", program_name);
     exit(1);
 }
 
@@ -57,40 +60,60 @@ void alarm_handler(int sig)
 
 int main(int argc, char *argv[])
 {
+    int i;
     int mem_usage_kb;
+    int is_loopcount_based;
+    int num_loops;
     int runtime_s;
     int num_elements_per_matrix;
     int **matrix_a;
     int **matrix_b;
     int **matrix_c;
 
-    if(argc != 3){
+    if(argc != 4){
         usage_and_exit(argv[0]);
     }
 
-    srand(time(NULL));
-    signal(SIGALRM, alarm_handler);
 
-    mem_usage_kb = atoi(argv[1]);
-    runtime_s   = atoi(argv[2]);
+    mem_usage_kb       = atoi(argv[1]);
     num_elements_per_matrix = (mem_usage_kb * 1024) / (sizeof(int) * 3);
     n = (int) sqrt(num_elements_per_matrix);
 
+    is_loopcount_based = atoi(argv[2]);
+    if(is_loopcount_based){
+        num_loops = atoi(argv[3]);
+    }else{
+        srand(time(NULL));
+        signal(SIGALRM, alarm_handler);
+        runtime_s = atoi(argv[3]);
+    }
+
     printf("Executing matrix multiply:\n");
     printf("\tnum columns/rows: %d\n", n);
-    printf("\t~mem usage (KB):  %d\n", mem_usage_kb);
-    printf("\truntime (s):      %d\n", runtime_s);
+    printf("\t~mem usage (KB): %d\n", mem_usage_kb);
+    if(is_loopcount_based){
+        printf("\tnum matrix multiply loops: %d\n", num_loops);
+    }else{
+        printf("\truntime (s): %d\n", runtime_s);
+    }
 
     init_matrix(&matrix_a);
     init_matrix(&matrix_b);
     init_matrix(&matrix_c);
 
-    alarm(runtime_s);
-
-    while(1){
-        mat_mult(matrix_a, matrix_b, matrix_c);
-        mat_mult(matrix_c, matrix_a, matrix_b);
-        mat_mult(matrix_b, matrix_c, matrix_a);
+    if(is_loopcount_based){
+        for(i = 0; i < num_loops; i++){
+            mat_mult(matrix_a, matrix_b, matrix_c);
+            mat_mult(matrix_c, matrix_a, matrix_b);
+            mat_mult(matrix_b, matrix_c, matrix_a);
+        }
+    }else{
+        alarm(runtime_s);
+        while(1){
+            mat_mult(matrix_a, matrix_b, matrix_c);
+            mat_mult(matrix_c, matrix_a, matrix_b);
+            mat_mult(matrix_b, matrix_c, matrix_a);
+        }
     }
  
     return 0;
