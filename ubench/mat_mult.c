@@ -88,14 +88,14 @@ int main(int argc, char *argv[])
         runtime_s = atoi(argv[3]);
     }
 
-    printf("Executing matrix multiply:\n");
+    /*printf("Executing matrix multiply:\n");
     printf("\tnum columns/rows: %d\n", n);
     printf("\t~mem usage (KB): %d\n", mem_usage_kb);
     if(is_loopcount_based){
         printf("\tnum matrix multiply loops: %d\n", num_loops);
     }else{
         printf("\truntime (s): %d\n", runtime_s);
-    }
+    }*/
 
     init_matrix(&matrix_a);
     init_matrix(&matrix_b);
