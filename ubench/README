@@ -1,0 +1,9 @@
+The M_DRS (DATA) field on htop is something like...
+
+    ./mat_mult 100 20 -> 324
+    ./mat_mult 200 20 -> 456
+    ./mat_mult 300 20 -> 588
+
+That is, when your matrixes take roughly 100 KB, the program still uses about
+324 KB of data + stack. We should just be aware of this when we run it on
+ThunderX and we're testing on the border of the 16MB L2 cache.
