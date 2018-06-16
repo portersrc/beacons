@@ -4,9 +4,12 @@
 #include <time.h>
 #include <unistd.h>
 #include <signal.h>
+#include <limits.h>
 
 
 int n; // n, as in, an n x n matrix
+unsigned long int mat_mults_complete = 0;
+unsigned long int mat_mults_complete_overflow = 0;
  
 
 void usage_and_exit(char *program_name)
@@ -30,6 +33,10 @@ void mat_mult(int **m1, int **m2, int **m3)
             }
         }
     }
+    if(mat_mults_complete == UINT_MAX){
+        mat_mults_complete_overflow++;
+    }
+    mat_mults_complete++;
 }
 
 
@@ -53,7 +60,12 @@ void init_matrix(int ***m)
 
 void alarm_handler(int sig)
 {
-    printf("Time expired. Exiting.\n");
+    printf("mat_mults_complete %lu\n", mat_mults_complete);
+    printf("mat_mults_complete_overflow %lu \n", mat_mults_complete_overflow);
+    if(mat_mults_complete_overflow > 0){
+        // should never happen given what we're doing.
+        printf("TODO: overflow occurred, so locking must be implemented\n");
+    }
     exit(1);
 }
 
@@ -75,7 +87,7 @@ int main(int argc, char *argv[])
     }
 
 
-    mem_usage_kb       = atoi(argv[1]);
+    mem_usage_kb = atoi(argv[1]);
     num_elements_per_matrix = (mem_usage_kb * 1024) / (sizeof(int) * 3);
     n = (int) sqrt(num_elements_per_matrix);
 
