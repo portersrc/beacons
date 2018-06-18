@@ -128,15 +128,15 @@ int main(int argc, char *argv[])
     if(is_loopcount_based){
         for(i = 0; i < num_loops; i++){
             mat_mult(matrix_a, matrix_b, matrix_c);
-            mat_mult(matrix_c, matrix_a, matrix_b);
-            mat_mult(matrix_b, matrix_c, matrix_a);
+            //mat_mult(matrix_c, matrix_a, matrix_b);
+            //mat_mult(matrix_b, matrix_c, matrix_a);
         }
     }else{
         alarm(runtime_s);
         while(1){
             mat_mult(matrix_a, matrix_b, matrix_c);
-            mat_mult(matrix_c, matrix_a, matrix_b);
-            mat_mult(matrix_b, matrix_c, matrix_a);
+            //mat_mult(matrix_c, matrix_a, matrix_b);
+            //mat_mult(matrix_b, matrix_c, matrix_a);
         }
     }
  
