@@ -13,7 +13,7 @@ unsigned long int mat_mults_complete_overflow = 0;
 
 unsigned long int num_stores = 0;
 unsigned long int num_stores_overflow = 0;
- 
+
 
 void usage_and_exit(char *program_name)
 {
@@ -25,14 +25,17 @@ void usage_and_exit(char *program_name)
 }
 
 
-void mat_mult(int **m1, int **m2, int **m3)
+//void mat_mult(int **m1, int **m2, int **m3)
+void mat_mult(int *m1, int *m2, int *m3, int n) /* only square matrices */
 {
     int i, j, k;
     for(i = 0; i < n; i++){
         for(j = 0; j < n; j++){
-            m3[i][j] = 0;
+            //m3[i][j] = 0;
+            *(m3 +i*n +j) = 0;
             for(k = 0; k < n; k++){
-                m3[i][j] += m1[i][k]*m2[k][j];
+                //m3[i][j] += m1[i][k]*m2[k][j];
+                *(m3 +i*n +j) += *(m1 +i*n +k) * *(m2 +k*n +j);
                 if(num_stores == ULONG_MAX){
                     num_stores_overflow++;
                 }
@@ -46,8 +49,7 @@ void mat_mult(int **m1, int **m2, int **m3)
     mat_mults_complete++;
 }
 
-
-void init_matrix(int ***m)
+/*void init_matrix(int ***m)
 {
     int i;
     int j;
@@ -62,6 +64,23 @@ void init_matrix(int ***m)
             (*m)[i][j] = rand();
         }
     }
+}*/
+
+
+void init_matrix(int **mtx)
+{
+    int i;
+    int j;
+
+    int *m = malloc(sizeof(int)* n * n);
+
+    for(i = 0; i < n; i++){
+        for(j = 0; j < n; j++){
+            *(m +i*n +j) = rand();
+        }
+    }
+
+    *mtx = m;
 }
 
 
@@ -90,9 +109,12 @@ int main(int argc, char *argv[])
     int num_loops;
     int runtime_s;
     int num_elements_per_matrix;
-    int **matrix_a;
-    int **matrix_b;
-    int **matrix_c;
+    //int **matrix_a;
+    //int **matrix_b;
+    //int **matrix_c;
+    int *matrix_a;
+    int *matrix_b;
+    int *matrix_c;
 
     if(argc != 4){
         usage_and_exit(argv[0]);
@@ -127,18 +149,20 @@ int main(int argc, char *argv[])
 
     if(is_loopcount_based){
         for(i = 0; i < num_loops; i++){
-            mat_mult(matrix_a, matrix_b, matrix_c);
+            //mat_mult(matrix_a, matrix_b, matrix_c);
+            mat_mult(matrix_a, matrix_b, matrix_c, n);
             //mat_mult(matrix_c, matrix_a, matrix_b);
             //mat_mult(matrix_b, matrix_c, matrix_a);
         }
     }else{
         alarm(runtime_s);
         while(1){
-            mat_mult(matrix_a, matrix_b, matrix_c);
+            //mat_mult(matrix_a, matrix_b, matrix_c);
+            mat_mult(matrix_a, matrix_b, matrix_c, n);
             //mat_mult(matrix_c, matrix_a, matrix_b);
             //mat_mult(matrix_b, matrix_c, matrix_a);
         }
     }
- 
+
     return 0;
 }
