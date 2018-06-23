@@ -1,2 +1,3 @@
 *.swp
-ubench/mat_mult
+ubench/mat_mult/mat_mult
+ubench/mat_mult/tmp_results
