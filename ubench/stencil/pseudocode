@@ -1,0 +1,16 @@
+https://ieeexplore.ieee.org/document/7760798/
+void stencil_computation(double dst[], double src[])                            
+{                                                                               
+    for z = 1 to n:                                                             
+        for y = 1 to n:                                                         
+            for x = 1 to n:                                                     
+                dst[z,y,x] =                                                    
+                  c1 * src[z,y,x] +                                             
+                  c2 *                                                          
+                    (src[z+1, y, x]                                             
+                    + src[z,y+1,x]                                              
+                    + src[z,y,x+1]                                              
+                    + src[z,y,x-1]                                              
+                    + src[z,y-1,x]                                              
+                    + src[z-1, y, x]);                                          
+}     
