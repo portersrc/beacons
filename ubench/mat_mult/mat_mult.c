@@ -5,7 +5,12 @@
 #include <unistd.h>
 #include <signal.h>
 #include <limits.h>
+#include <sys/time.h>
 
+#include <gtb/gtb.h>
+
+int uid; // for gtb
+long long loop_time = 3000; // for the scheduler.
 
 int n; // n, as in, an n x n matrix
 unsigned long int mat_mults_complete = 0;
@@ -25,10 +30,39 @@ void usage_and_exit(char *program_name)
 }
 
 
+static inline
+long long _gettime(void)
+{
+    struct timespec tv = {0};
+    if(clock_gettime(CLOCK_REALTIME, &tv) != 0){
+        printf("_gettime: timer error\n");
+        return 0;
+    }
+    return (((long long) tv.tv_sec * 1000000000L ) + (long long) (tv.tv_nsec));
+}
+
+
+
+
+
 //void mat_mult(int **m1, int **m2, int **m3)
 void mat_mult(int *m1, int *m2, int *m3, int n) /* only square matrices */
 {
     int i, j, k;
+    long long start;
+    long long end;
+
+    start = _gettime();
+    gtb_inform(uid,
+               PREDICTIVE_EXACT, // hard-coded for now
+               L2, // TODO prefix this...
+               16, // dummy value
+               16, // dummy value
+               loop_time,
+               1);
+    end = _gettime();
+    printf("time diff: %lld\n", end - start);
+    //gettimeofday(&start, NULL);
     for(i = 0; i < n; i++){
         for(j = 0; j < n; j++){
             //m3[i][j] = 0;
@@ -43,6 +77,9 @@ void mat_mult(int *m1, int *m2, int *m3, int n) /* only square matrices */
             }
         }
     }
+    //gettimeofday(&end, NULL);
+    //printf("time diff: %ld\n", ((end.tv_sec * 1000000 + end.tv_usec)
+    //    - (start.tv_sec * 1000000 + start.tv_usec)));
     if(mat_mults_complete == ULONG_MAX){
         mat_mults_complete_overflow++;
     }
@@ -120,6 +157,7 @@ int main(int argc, char *argv[])
         usage_and_exit(argv[0]);
     }
 
+    uid = gtb_init();
 
     mem_usage_kb = atoi(argv[1]);
     num_elements_per_matrix = (mem_usage_kb * 1024) / (sizeof(int) * 3);
