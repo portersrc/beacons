@@ -1,0 +1,13 @@
+These two benchmarks are very similar. They have a streaming period at the
+start, followed by a reuse period, followed by a streaming period. Example
+command:
+    $ ./random_stream_two 200:500
+Here "200" is loop-bound-1, which ultimately controls the amount of
+streaming. And "500" is loop-bound-2, which controls the length of time
+spent in reuse. The streaming proceeds by steps of 64 * sizeof(int). This
+could be modified to adhere to the exact size of a cache line on the particular
+architecture, which would make it easier to compute the footprint size.
+
+The main difference between the two benchmarks is that -two has nested loops
+on its loop bounds, which makes it easier to use smaller arguments and still
+generate reasonably long run times.
